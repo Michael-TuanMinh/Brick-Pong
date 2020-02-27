@@ -5,13 +5,15 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] GameObject cube;
+    [SerializeField] GameObject brick;
     [SerializeField] Vector2 startPosition;
     [SerializeField] float speed = 5.0f;
-    [SerializeField] float space;
+    public float space;
+    [SerializeField] GameObject text;
 
     private int row = 4;
     private int col = 12;
+    public int lives = 100;
 
     private int[,] grid = {
         { 0,0,1,1,1,3,3,1,1,1,0,0},
@@ -22,34 +24,38 @@ public class PlayerController : MonoBehaviour
 
 
     private Vector3 touchPosition;
-    private Rigidbody myRigidbody;
+    private Rigidbody2D myRigidbody;
     private Vector3 direction; // caculate direction base on touch
-
     
 
     private void Awake()
     {
-        myRigidbody = GetComponent<Rigidbody>();
+        myRigidbody = GetComponent<Rigidbody2D>();
     }
 
     private void Start()
     {
+       
+        lives = row * col;
+
         for (int i = 0; i < row; i++)
         {
             for(int j = 0; j < col; j++)
             {
                 if(grid[i,j] != 0)
                 {
-                    GameObject temp = Instantiate(cube, this.transform);
-                    temp.transform.localPosition = new Vector2(-j * space ,-i * space);
-                    /*if (grid[i, j] == 1) temp.GetComponent<Renderer>().material.color = Color.cyan;
-                    else if (grid[i, j] == 3) temp.GetComponent<Renderer>().material.color = Color.blue;
-                    else if (grid[i, j] == 4) temp.GetComponent<Renderer>().material.color = Color.red;*/
+                    GameObject temp = Instantiate(brick, this.transform);
+                    
+                    temp.transform.localPosition = new Vector2(-j * temp.transform.localScale.x / space, -i * temp.transform.localScale.x / space);
+                }
+                else
+                {
+                    lives--;
                 }
             }
         }
 
-        //this.transform.position = startPosition;
+        this.transform.position = startPosition;
            
     }
 
@@ -57,25 +63,25 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         InputListener();
+        if (lives == 0)
+        {
+            text.SetActive(true);
+            Time.timeScale = 0;
+        }
     }
 
 
     private void InputListener()
     {
-        #region Mouse Input
-       /* if (Input.GetMouseButtonDown(0))
-        {
-            touchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            touchPosition.z = 0;
-            direction = (touchPosition - transform.position);
-            myRigidbody.velocity = new Vector2(direction.x, 0) * speed;
+#if UNITY_EDITOR
+        //float mousePosition = Mathf.Clamp(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, 1.8f, 3.1f);
+        float mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition).x;
+        this.transform.position = new Vector3(mousePosition, this.transform.position.y, 0);
 
-            if (Input.GetMouseButtonUp(0))
-                myRigidbody.velocity = Vector2.zero;
-        }*/
-        #endregion
 
-        #region Mobile Input
+#endif
+
+#if UNITY_IOS
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -87,6 +93,6 @@ public class PlayerController : MonoBehaviour
             if (touch.phase == TouchPhase.Ended)
                 myRigidbody.velocity = Vector2.zero;
         }
-        #endregion
+#endif
     }
 }
