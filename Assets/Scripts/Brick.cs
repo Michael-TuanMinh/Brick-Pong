@@ -7,7 +7,42 @@ public class Brick : MonoBehaviour
 {
     [SerializeField] GameObject breakEffect;
 
-    
+    private Rigidbody2D rb;
+    private float deltaX, deltaY;
+
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+
+    private void Update()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            Vector2 touchPos = Camera.main.ScreenToWorldPoint(touch.position);
+
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    deltaX = touchPos.x - transform.position.x;
+                    deltaY = touchPos.y - transform.position.y;
+                    break;
+                case TouchPhase.Moved:
+
+                    rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+                    break;
+                case TouchPhase.Ended:
+                    rb.velocity = Vector2.zero;
+                    break;
+            }
+        }
+
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "Ball")

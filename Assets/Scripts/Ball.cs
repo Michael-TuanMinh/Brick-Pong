@@ -4,34 +4,34 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    [SerializeField] float startSpeed;
-
+    [SerializeField] float speed;
+    private Vector2 direction;
     private Rigidbody2D rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.AddForce(new Vector2(10, startSpeed));
+        direction = Vector2.one.normalized;
     }
 
+    private void FixedUpdate()
+    {
+        rb.velocity = (Vector3)direction * speed;
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
        
-        if (collision.gameObject.tag == "Brick")
+        if (collision.gameObject.tag == "Brick" || collision.gameObject.tag == "TopBottomBounds")
         {
-            Debug.Log(collision.transform.position.x);
-            float difference = collision.transform.position.x - collision.contacts[0].point.x;
-
-            
-           if (difference < collision.transform.position.x)
-            {
-                rb.AddForce(new Vector2(-Mathf.Abs(difference * 200), 0));
-            }
-            else
-                rb.AddForce(new Vector2(Mathf.Abs(difference * 200), 0));
+            direction.y = -direction.y;
         }
-
-  
+        else if(collision.gameObject.tag == "LeftRightBounds")
+        {
+            direction.x = -direction.x;
+        }
+        
     }
+
+ 
 }

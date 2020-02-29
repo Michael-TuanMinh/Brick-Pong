@@ -7,7 +7,6 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] GameObject brick;
     [SerializeField] Vector2 startPosition;
-    [SerializeField] float speed = 5.0f;
 
     [Tooltip ("khoang cach giua 2 vien gach bang 1 phan bao nhieu chieu dai cua vien gach")]
     [SerializeField] float space;
@@ -23,17 +22,6 @@ public class PlayerController : MonoBehaviour
         { 1,1,1,1,1,3,3,1,1,1,1,1},
         { 0,4,4,4,0,0,0,0,4,4,4,0}
         };
-
-
-    private Vector3 touchPosition;
-    private Rigidbody2D myRigidbody;
-    private Vector3 direction; // caculate direction base on touch
-    
-
-    private void Awake()
-    {
-        myRigidbody = GetComponent<Rigidbody2D>();
-    }
 
     private void Start()
     {
@@ -57,14 +45,12 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        this.transform.position = startPosition;
-           
+        this.transform.position = startPosition;  
     }
-
+    
 
     private void Update()
     {
-        InputListener();
         if (lives == 0)
         {
             text.SetActive(true);
@@ -72,29 +58,4 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
-    private void InputListener()
-    {
-#if UNITY_EDITOR
-        //float mousePosition = Mathf.Clamp(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, 1.8f, 3.1f);
-        float mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition).x;
-        this.transform.position = new Vector3(mousePosition, this.transform.position.y, 0);
-
-
-#endif
-
-#if UNITY_IOS
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            touchPosition = Camera.main.ScreenToWorldPoint(touch.position);
-            touchPosition.z = 0;
-            direction = (touchPosition - transform.position);
-            myRigidbody.velocity = new Vector2(direction.x, 0) * speed;
-
-            if (touch.phase == TouchPhase.Ended)
-                myRigidbody.velocity = Vector2.zero;
-        }
-#endif
-    }
 }

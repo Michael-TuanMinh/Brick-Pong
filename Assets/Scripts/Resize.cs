@@ -27,6 +27,5 @@ public class Resize : MonoBehaviour
         
 
         transform.localScale = isSysmetrical ? new Vector3(worldScreenWidth / width, worldScreenWidth / width, 1) :  new Vector3(worldScreenWidth / width, worldScreenHeight / height, 1);
-        Debug.Log(sr.sprite.bounds.size.x);
     }
 }

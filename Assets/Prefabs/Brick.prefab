@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 4614640424709475208}
   - component: {fileID: 7587428441099056313}
   - component: {fileID: 9143009191226646694}
+  - component: {fileID: 6479317265484284906}
   m_Layer: 0
   m_Name: Brick
-  m_TagString: Untagged
+  m_TagString: Brick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -96,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7112c6b5a05f249548fe0c961d982148, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Size: 15
+  Size: 20
   isSysmetrical: 1
 --- !u!61 &7587428441099056313
 BoxCollider2D:
@@ -107,7 +108,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 4317145049542987370}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 2fea285494e744833868c22b724ceca6, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -138,3 +139,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   breakEffect: {fileID: 238001359348630942, guid: 9b9d2b916d50048bfb84b2e351454f96,
     type: 3}
+--- !u!50 &6479317265484284906
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4317145049542987370}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 6
