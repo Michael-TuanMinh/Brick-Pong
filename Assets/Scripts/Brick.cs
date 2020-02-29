@@ -11,19 +11,23 @@ public class Brick : MonoBehaviour
     private float deltaX, deltaY;
     private bool isDraging;
     private Vector2 touchPos;
-    void Start()
+
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    
     private void Update()
     {
+        if (transform.parent.GetComponent<PlayerController>())
+        {
 #if UNITY_EDITOR
-        InputMouseDrag();
+            InputMouseDrag();
 #else
-        InputTouchDrag();
+            InputTouchDrag();
 #endif
+        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -51,12 +55,12 @@ public class Brick : MonoBehaviour
     {
         if(collision.tag == "LeftBorder")
         {
-            transform.parent.GetComponent<PlayerController>().isAtLeftBorder = true;
+           if(transform.parent.GetComponent<PlayerController>()) transform.parent.GetComponent<PlayerController>().isAtLeftBorder = true;
             
         }
         else if (collision.tag == "RightBorder")
         {
-            transform.parent.GetComponent<PlayerController>().isAtRightBorder = true;
+            if (transform.parent.GetComponent<PlayerController>()) transform.parent.GetComponent<PlayerController>().isAtRightBorder = true;
         }
     }
 
@@ -64,11 +68,11 @@ public class Brick : MonoBehaviour
     {
         if (collision.tag == "LeftBorder")
         {
-            transform.parent.GetComponent<PlayerController>().isAtLeftBorder = false;
+            if (transform.parent.GetComponent<PlayerController>()) transform.parent.GetComponent<PlayerController>().isAtLeftBorder = false;
         }
         else if (collision.tag == "RightBorder")
         {
-            transform.parent.GetComponent<PlayerController>().isAtRightBorder = false;
+            if (transform.parent.GetComponent<PlayerController>()) transform.parent.GetComponent<PlayerController>().isAtRightBorder = false;
         }
     }
 
@@ -89,6 +93,7 @@ public class Brick : MonoBehaviour
         if (isDraging)
         {
             touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
             if (transform.parent.GetComponent<PlayerController>().isAtLeftBorder && touchPos.x - deltaX > transform.position.x) // move to the left
             {
                 rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));

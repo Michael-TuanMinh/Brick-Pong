@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class AI : MonoBehaviour
 {
-    [SerializeField] GameObject cube;
-    [SerializeField] Vector2 startPosition;
-    [SerializeField] float speed = 5.0f;
+    [SerializeField] GameObject brick;
+
+    [Tooltip("khoang cach giua 2 vien gach bang 1 phan bao nhieu chieu dai cua vien gach")]
     [SerializeField] float space;
     [SerializeField] GameObject text;
 
     private int row = 4;
     private int col = 12;
     public int lives = 100;
+    [HideInInspector] public bool isAtLeftBorder = false;
+    [HideInInspector] public bool isAtRightBorder = false;
 
     private int[,] grid = {
         { 0,0,1,1,1,3,3,1,1,1,0,0},
@@ -21,9 +23,9 @@ public class AI : MonoBehaviour
         { 0,4,4,4,0,0,0,0,4,4,4,0}
         };
 
-
     private void Start()
     {
+
         lives = row * col;
 
         for (int i = 0; i < row; i++)
@@ -32,21 +34,21 @@ public class AI : MonoBehaviour
             {
                 if (grid[i, j] != 0)
                 {
-                    GameObject temp = Instantiate(cube, this.transform);
-                    temp.transform.localPosition = new Vector2(-j * space, -i * space);
-                    /*if (grid[i, j] == 1) temp.GetComponent<Renderer>().material.color = Color.cyan;
-                    else if (grid[i, j] == 3) temp.GetComponent<Renderer>().material.color = Color.blue;
-                    else if (grid[i, j] == 4) temp.GetComponent<Renderer>().material.color = Color.red;*/
+                    GameObject temp = Instantiate(brick, this.transform);
+
+                    temp.transform.localPosition = new Vector2(-j * temp.transform.localScale.x / space, -i * temp.transform.localScale.x / space);
                 }
                 else
                 {
                     lives--;
                 }
-                
             }
         }
-        this.transform.position = startPosition;
 
+        float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0);
+        float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
+
+        transform.position = new Vector2(- worldScreenWidth / 3.5f, 2);
     }
 
 
@@ -56,6 +58,14 @@ public class AI : MonoBehaviour
         {
             text.SetActive(true);
             Time.timeScale = 0;
+        }
+
+        if (isAtLeftBorder || isAtRightBorder)
+        {
+            foreach (Rigidbody2D r in GetComponentsInChildren<Rigidbody2D>())
+            {
+                r.velocity = Vector2.zero;
+            }
         }
     }
 

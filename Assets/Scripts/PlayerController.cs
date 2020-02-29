@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] GameObject brick;
-    [SerializeField] Vector2 startPosition;
 
     [Tooltip ("khoang cach giua 2 vien gach bang 1 phan bao nhieu chieu dai cua vien gach")]
     [SerializeField] float space;
@@ -46,8 +45,10 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+        float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0);
+        float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
 
-        this.transform.position = startPosition;  
+        transform.position = new Vector2(worldScreenWidth / 3.5f, -2);  
     }
     
 

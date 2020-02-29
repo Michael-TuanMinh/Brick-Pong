@@ -487,7 +487,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1083267690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -500,12 +500,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9ab9080a48d24743a1906e853dd90e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cube: {fileID: 4317145049542987370, guid: 8674f154c1f014c08acd0c71eda07228, type: 3}
+  brick: {fileID: 4317145049542987370, guid: 8674f154c1f014c08acd0c71eda07228, type: 3}
   startPosition: {x: -3.1, y: 2.2}
-  speed: 5
   space: 2.5
   text: {fileID: 592518442}
   lives: 0
+  isAtLeftBorder: 0
+  isAtRightBorder: 0
 --- !u!4 &1083267691
 Transform:
   m_ObjectHideFlags: 0
