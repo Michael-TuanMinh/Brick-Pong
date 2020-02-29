@@ -14,8 +14,9 @@ public class AI : MonoBehaviour
     private int row = 4;
     private int col = 12;
     private GameObject ball;
-    public int lives = 100;
     private Vector2 direction;
+
+    [HideInInspector] public int lives;
     [HideInInspector] public bool isAtLeftBorder = false;
     [HideInInspector] public bool isAtRightBorder = false;
 

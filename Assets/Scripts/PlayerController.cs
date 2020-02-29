@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
     private int row = 4;
     private int col = 12;
-    public int lives = 100;
+    [HideInInspector] public int lives;
     [HideInInspector] public bool isAtLeftBorder = false;
     [HideInInspector] public bool isAtRightBorder = false;
 
