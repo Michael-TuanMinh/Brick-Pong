@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7112c6b5a05f249548fe0c961d982148, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Size: 20
+  Size: 30
   isSysmetrical: 1
 --- !u!61 &7587428441099056313
 BoxCollider2D:

@@ -5,13 +5,18 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     [SerializeField] float speed;
-    private Vector2 direction;
+    [HideInInspector] public Vector2 direction;
     private Rigidbody2D rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         direction = Vector2.one.normalized;
+    }
+
+    private void Update()
+    {
+        Debug.Log(direction);
     }
 
     private void FixedUpdate()

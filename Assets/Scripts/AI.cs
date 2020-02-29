@@ -13,6 +13,7 @@ public class AI : MonoBehaviour
 
     private int row = 4;
     private int col = 12;
+    private GameObject ball;
     public int lives = 100;
     private Vector2 direction;
     [HideInInspector] public bool isAtLeftBorder = false;
@@ -27,7 +28,6 @@ public class AI : MonoBehaviour
 
     private void Start()
     {
-
         lives = row * col;
 
         for (int i = 0; i < row; i++)
@@ -45,6 +45,8 @@ public class AI : MonoBehaviour
                     lives--;
                 }
             }
+
+            ball = GameObject.FindGameObjectWithTag("Ball");
         }
 
         float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0);
@@ -52,7 +54,7 @@ public class AI : MonoBehaviour
 
         transform.position = new Vector2(- worldScreenWidth / 3.5f, 2);
 
-        direction = new Vector2(0.02f, 0);
+        direction = new Vector2(speed, 0);
     }
 
 
@@ -64,29 +66,42 @@ public class AI : MonoBehaviour
             Time.timeScale = 0;
         }
 
-        if (isAtLeftBorder)
-        {
-            direction.x *= -1;
-            isAtLeftBorder = false;
-        }
-        else if(isAtRightBorder)
-        {
-            direction.x *= -1;
-            isAtRightBorder = false;
-        }
-
-       
+        ComputeDirection();
     }
 
     private void FixedUpdate()
     {
-        Move();
-    }
-
-    private void Move()
-    {
         transform.localPosition += (Vector3)direction;
     }
 
+    private void ComputeDirection()
+    {
+        if (isAtLeftBorder)
+        {
+            if (ball.GetComponent<Ball>().direction.x > 0) direction.x = 0;
+            else
+            {
+                direction.x *= -1;
+                isAtLeftBorder = false;
+            }
+
+        }
+        else if (isAtRightBorder)
+        {
+            if (ball.GetComponent<Ball>().direction.x < 0) direction.x = 0;
+            else
+            {
+                direction.x *= -1;
+                isAtRightBorder = false;
+            }
+
+        }
+
+        if (ball.GetComponent<Ball>().direction.x > 0 && !isAtLeftBorder)
+        {
+            direction.x = -Mathf.Abs(speed);
+        }
+        else if (ball.GetComponent<Ball>().direction.x < 0 && !isAtRightBorder) direction.x = Mathf.Abs(speed);
+    }
 
 }
