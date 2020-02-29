@@ -36,7 +36,18 @@ public class PlayerController : MonoBehaviour
                 if(grid[i,j] != 0)
                 {
                     GameObject temp = Instantiate(brick, this.transform);
-                    
+                    switch (grid[i, j])
+                    {
+                        case 1:
+                            temp.GetComponent<SpriteRenderer>().color = Color.blue;
+                            break;
+                        case 3:
+                            temp.GetComponent<SpriteRenderer>().color = Color.cyan;
+                            break;
+                        case 4:
+                            temp.GetComponent<SpriteRenderer>().color = Color.red;
+                            break;
+                    }
                     temp.transform.localPosition = new Vector2(-j * temp.transform.localScale.x / space, -i * temp.transform.localScale.x / space);
                 }
                 else

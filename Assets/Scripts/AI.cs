@@ -11,8 +11,8 @@ public class AI : MonoBehaviour
     [SerializeField] GameObject text;
     [SerializeField] float speed;
 
-    private int row = 4;
-    private int col = 12;
+    private int row = 5;
+    private int col = 10;
     private GameObject ball;
     private Vector2 direction;
 
@@ -20,12 +20,11 @@ public class AI : MonoBehaviour
     [HideInInspector] public bool isAtLeftBorder = false;
     [HideInInspector] public bool isAtRightBorder = false;
 
-    private int[,] grid = {
-        { 0,0,1,1,1,3,3,1,1,1,0,0},
-        { 0,1,1,1,1,3,3,1,1,1,1,0},
-        { 1,1,1,1,1,3,3,1,1,1,1,1},
-        { 0,4,4,4,0,0,0,0,4,4,4,0}
-        };
+    private int[,] grid = { {0,1,1,1,1,1,1,1,1,0},
+                {0,1,2,1,1,1,1,2,1,0},
+                {1,1,1,1,1,1,1,1,1,1},
+                {1,1,2,2,2,2,2,2,1,1},
+                {1,1,1,1,1,1,1,1,1,1} };
 
     private void Start()
     {
@@ -38,7 +37,16 @@ public class AI : MonoBehaviour
                 if (grid[i, j] != 0)
                 {
                     GameObject temp = Instantiate(brick, this.transform);
-
+                    switch (grid[i, j])
+                    {
+                        case 1:
+                            temp.GetComponent<SpriteRenderer>().color = Color.green;
+                            break;
+                        case 2:
+                            temp.GetComponent<SpriteRenderer>().color = Color.yellow;
+                            break;
+                        
+                    }
                     temp.transform.localPosition = new Vector2(-j * temp.transform.localScale.x / space, -i * temp.transform.localScale.x / space);
                 }
                 else
