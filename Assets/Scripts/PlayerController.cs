@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private int row = 4;
     private int col = 12;
     public int lives = 100;
+    [HideInInspector] public bool isAtBorder = false;
 
     private int[,] grid = {
         { 0,0,1,1,1,3,3,1,1,1,0,0},

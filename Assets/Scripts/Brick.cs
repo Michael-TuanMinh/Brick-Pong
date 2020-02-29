@@ -19,25 +19,28 @@ public class Brick : MonoBehaviour
 
     private void Update()
     {
-        if (Input.touchCount > 0)
+        if(!transform.parent.GetComponent<PlayerController>().isAtBorder)
         {
-            Touch touch = Input.GetTouch(0);
-
-            Vector2 touchPos = Camera.main.ScreenToWorldPoint(touch.position);
-
-            switch (touch.phase)
+            if (Input.touchCount > 0)
             {
-                case TouchPhase.Began:
-                    deltaX = touchPos.x - transform.position.x;
-                    deltaY = touchPos.y - transform.position.y;
-                    break;
-                case TouchPhase.Moved:
+                Touch touch = Input.GetTouch(0);
 
-                    rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
-                    break;
-                case TouchPhase.Ended:
-                    rb.velocity = Vector2.zero;
-                    break;
+                Vector2 touchPos = Camera.main.ScreenToWorldPoint(touch.position);
+
+                switch (touch.phase)
+                {
+                    case TouchPhase.Began:
+                        deltaX = touchPos.x - transform.position.x;
+                        deltaY = touchPos.y - transform.position.y;
+                        break;
+                    case TouchPhase.Moved:
+
+                        rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+                        break;
+                    case TouchPhase.Ended:
+                        rb.velocity = Vector2.zero;
+                        break;
+                }
             }
         }
 
