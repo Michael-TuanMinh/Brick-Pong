@@ -234,7 +234,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brick: {fileID: 4317145049542987370, guid: 8674f154c1f014c08acd0c71eda07228, type: 3}
-  startPosition: {x: 1.5, y: -2}
   space: 2.5
   text: {fileID: 1538724109}
   lives: 0
@@ -501,9 +500,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brick: {fileID: 4317145049542987370, guid: 8674f154c1f014c08acd0c71eda07228, type: 3}
-  startPosition: {x: -3.1, y: 2.2}
   space: 2.5
   text: {fileID: 592518442}
+  speed: 0.05
   lives: 0
   isAtLeftBorder: 0
   isAtRightBorder: 0

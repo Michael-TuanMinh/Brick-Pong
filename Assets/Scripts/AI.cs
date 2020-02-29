@@ -9,10 +9,12 @@ public class AI : MonoBehaviour
     [Tooltip("khoang cach giua 2 vien gach bang 1 phan bao nhieu chieu dai cua vien gach")]
     [SerializeField] float space;
     [SerializeField] GameObject text;
+    [SerializeField] float speed;
 
     private int row = 4;
     private int col = 12;
     public int lives = 100;
+    private Vector2 direction;
     [HideInInspector] public bool isAtLeftBorder = false;
     [HideInInspector] public bool isAtRightBorder = false;
 
@@ -49,6 +51,8 @@ public class AI : MonoBehaviour
         float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
 
         transform.position = new Vector2(- worldScreenWidth / 3.5f, 2);
+
+        direction = new Vector2(0.02f, 0);
     }
 
 
@@ -60,15 +64,29 @@ public class AI : MonoBehaviour
             Time.timeScale = 0;
         }
 
-        if (isAtLeftBorder || isAtRightBorder)
+        if (isAtLeftBorder)
         {
-            foreach (Rigidbody2D r in GetComponentsInChildren<Rigidbody2D>())
-            {
-                r.velocity = Vector2.zero;
-            }
+            direction.x *= -1;
+            isAtLeftBorder = false;
         }
+        else if(isAtRightBorder)
+        {
+            direction.x *= -1;
+            isAtRightBorder = false;
+        }
+
+       
     }
 
+    private void FixedUpdate()
+    {
+        Move();
+    }
+
+    private void Move()
+    {
+        transform.localPosition += (Vector3)direction;
+    }
 
 
 }
