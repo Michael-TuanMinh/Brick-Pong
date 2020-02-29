@@ -8,6 +8,8 @@ TagManager:
   - Brick
   - TopBottomBounds
   - LeftRightBounds
+  - LeftBorder
+  - RightBorder
   layers:
   - Default
   - TransparentFX
