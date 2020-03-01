@@ -13,6 +13,11 @@ public class PlayerController : MonoBehaviour
 
     private int row = 4;
     private int col = 12;
+    private float deltaX, deltaY;
+    private bool isDraging;
+    private Vector2 touchPos;
+    private Rigidbody2D rb;
+
     [HideInInspector] public int lives;
     [HideInInspector] public bool isAtLeftBorder = false;
     [HideInInspector] public bool isAtRightBorder = false;
@@ -26,14 +31,43 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-       
+        InitializeCharacter();
+        rb = GetComponent<Rigidbody2D>();
+    }
+    
+
+    private void Update()
+    {
+        if (lives == 0)
+        {
+            text.SetActive(true);
+            Time.timeScale = 0;
+        }
+
+        if(isAtLeftBorder || isAtRightBorder)
+        {
+            foreach(Rigidbody2D r in GetComponentsInChildren<Rigidbody2D>())
+            {
+                r.velocity = Vector2.zero;
+            }
+        }
+
+#if UNITY_EDITOR
+        InputMouseDrag();
+#else
+        InputTouchDrag();
+#endif
+    }
+
+    private void InitializeCharacter()
+    {
         lives = row * col;
 
         for (int i = 0; i < row; i++)
         {
-            for(int j = 0; j < col; j++)
+            for (int j = 0; j < col; j++)
             {
-                if(grid[i,j] != 0)
+                if (grid[i, j] != 0)
                 {
                     GameObject temp = Instantiate(brick, this.transform);
                     switch (grid[i, j])
@@ -59,23 +93,78 @@ public class PlayerController : MonoBehaviour
         float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0);
         float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
 
-        transform.position = new Vector2(worldScreenWidth / 3.5f, -2);  
+        transform.position = new Vector2(worldScreenWidth / 3.5f, -2);
     }
-    
 
-    private void Update()
+    private void InputMouseDrag()
     {
-        if (lives == 0)
+        if (Input.GetMouseButtonDown(0))
         {
-            text.SetActive(true);
-            Time.timeScale = 0;
+            isDraging = true;
+            touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            deltaX = touchPos.x - transform.position.x;
+            deltaY = touchPos.y - transform.position.y;
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            isDraging = false;
         }
 
-        if(isAtLeftBorder || isAtRightBorder)
+        if (isDraging)
         {
-            foreach(Rigidbody2D r in GetComponentsInChildren<Rigidbody2D>())
+            touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            if (isAtLeftBorder && touchPos.x - deltaX > transform.position.x) // move to the left
             {
-                r.velocity = Vector2.zero;
+                rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+            }
+            else if (isAtRightBorder && touchPos.x - deltaX < transform.position.x) // move to the right
+            {
+                rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+            }
+
+            else if (!isAtLeftBorder && !isAtRightBorder)
+            {
+                rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+            }
+
+        }
+    }
+
+    private void InputTouchDrag()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            touchPos = Camera.main.ScreenToWorldPoint(touch.position);
+
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    deltaX = touchPos.x - transform.position.x;
+                    deltaY = touchPos.y - transform.position.y;
+                    break;
+                case TouchPhase.Moved:
+
+                    if (isAtLeftBorder && touchPos.x - deltaX > transform.position.x) // move to the left
+                    {
+                        rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+                    }
+                    else if (isAtRightBorder && touchPos.x - deltaX < transform.position.x) // move to the right
+                    {
+                        rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+                    }
+
+                    else if (!isAtLeftBorder && !isAtRightBorder)
+                    {
+                        rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+                    }
+                    break;
+
+                case TouchPhase.Ended:
+                    rb.velocity = Vector2.zero;
+                    break;
             }
         }
     }

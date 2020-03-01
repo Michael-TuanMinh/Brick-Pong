@@ -28,6 +28,23 @@ public class AI : MonoBehaviour
 
     private void Start()
     {
+        InitializeChracter();
+    }
+
+
+    private void Update()
+    {
+        if (lives == 0)
+        {
+            text.SetActive(true);
+            Time.timeScale = 0;
+        }
+
+        ComputeDirection();
+    }
+
+    private void InitializeChracter()
+    {
         lives = row * col;
 
         for (int i = 0; i < row; i++)
@@ -45,7 +62,7 @@ public class AI : MonoBehaviour
                         case 2:
                             temp.GetComponent<SpriteRenderer>().color = Color.yellow;
                             break;
-                        
+
                     }
                     temp.transform.localPosition = new Vector2(-j * temp.transform.localScale.x / space, -i * temp.transform.localScale.x / space);
                 }
@@ -61,21 +78,9 @@ public class AI : MonoBehaviour
         float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0);
         float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
 
-        transform.position = new Vector2(- worldScreenWidth / 3.5f, 2);
+        transform.position = new Vector2(worldScreenWidth / 3.5f, 2);
 
         direction = new Vector2(speed, 0);
-    }
-
-
-    private void Update()
-    {
-        if (lives == 0)
-        {
-            text.SetActive(true);
-            Time.timeScale = 0;
-        }
-
-        ComputeDirection();
     }
 
     private void FixedUpdate()

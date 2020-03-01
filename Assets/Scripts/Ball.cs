@@ -14,11 +14,6 @@ public class Ball : MonoBehaviour
         direction = Vector2.one.normalized;
     }
 
-    private void Update()
-    {
-        Debug.Log(direction);
-    }
-
     private void FixedUpdate()
     {
         rb.velocity = (Vector3)direction * speed;
