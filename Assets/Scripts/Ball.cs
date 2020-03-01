@@ -33,5 +33,14 @@ public class Ball : MonoBehaviour
         
     }
 
- 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Spring")
+        {
+            if(Mathf.Abs(direction.y) * 1.2f < Mathf.Abs(speed) * 2) direction.y *= -1.2f;
+            else direction.y = -direction.y;
+        }
+    }
+
+
 }

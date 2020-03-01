@@ -10,6 +10,7 @@ TagManager:
   - LeftRightBounds
   - LeftBorder
   - RightBorder
+  - Spring
   layers:
   - Default
   - TransparentFX

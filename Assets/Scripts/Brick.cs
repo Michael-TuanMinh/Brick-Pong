@@ -32,13 +32,21 @@ public class Brick : MonoBehaviour
     {
         if(collision.tag == "LeftBorder")
         {
-           if(transform.parent.GetComponent<PlayerController>()) transform.parent.GetComponent<PlayerController>().isAtLeftBorder = true;
-           else if (transform.parent.GetComponent<AI>()) transform.parent.GetComponent<AI>().isAtLeftBorder = true;
+            if (transform.parent.GetComponent<PlayerController>())
+            {
+                transform.parent.GetComponent<PlayerController>().isAtLeftBorder = true;
+                transform.parent.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            }
+            else if (transform.parent.GetComponent<AI>()) transform.parent.GetComponent<AI>().isAtLeftBorder = true;
 
         }
         else if (collision.tag == "RightBorder")
         {
-            if (transform.parent.GetComponent<PlayerController>()) transform.parent.GetComponent<PlayerController>().isAtRightBorder = true;
+            if (transform.parent.GetComponent<PlayerController>())
+            {
+                transform.parent.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                transform.parent.GetComponent<PlayerController>().isAtRightBorder = true;
+            }
             else if (transform.parent.GetComponent<AI>()) transform.parent.GetComponent<AI>().isAtRightBorder = true;
         }
     }
