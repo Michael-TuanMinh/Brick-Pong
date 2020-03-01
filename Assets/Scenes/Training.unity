@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 238299874}
   - component: {fileID: 238299873}
   - component: {fileID: 238299875}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -501,7 +501,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1083267691}
   - component: {fileID: 1083267690}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: AI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -585,7 +585,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -2.4883895, y: 0}
+  m_Offset: {x: -5.0576987, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -596,7 +596,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.42322063, y: 9.6}
+  m_Size: {x: 5.561839, y: 9.6}
   m_EdgeRadius: 0
 --- !u!1 &1527189531
 GameObject:
@@ -750,7 +750,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 2.4850385, y: 0}
+  m_Offset: {x: 5.034357, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -761,7 +761,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.42992353, y: 9.6}
+  m_Size: {x: 5.5285587, y: 9.6}
   m_EdgeRadius: 0
 --- !u!1 &1790870818
 GameObject:
@@ -774,7 +774,7 @@ GameObject:
   - component: {fileID: 1790870819}
   - component: {fileID: 1790870821}
   - component: {fileID: 1790870820}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TopBottomBounds
   m_TagString: TopBottomBounds
   m_Icon: {fileID: 0}
@@ -958,7 +958,7 @@ GameObject:
   - component: {fileID: 1821253535}
   - component: {fileID: 1821253537}
   - component: {fileID: 1821253536}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LeftRightBounds
   m_TagString: LeftRightBounds
   m_Icon: {fileID: 0}
@@ -1144,6 +1144,11 @@ PrefabInstance:
       propertyPath: speed
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1346342288747539445, guid: 009edbbe6f60344ada85337847c5f36f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 6556524007842798852, guid: 009edbbe6f60344ada85337847c5f36f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1208,6 +1213,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6556524007842798855, guid: 009edbbe6f60344ada85337847c5f36f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 009edbbe6f60344ada85337847c5f36f, type: 3}

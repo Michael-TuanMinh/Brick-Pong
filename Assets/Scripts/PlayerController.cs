@@ -46,10 +46,7 @@ public class PlayerController : MonoBehaviour
 
         if(isAtLeftBorder || isAtRightBorder)
         {
-            foreach(Rigidbody2D r in GetComponentsInChildren<Rigidbody2D>())
-            {
-                r.velocity = Vector2.zero;
-            }
+            rb.velocity = Vector2.zero;
         }
 
 #if UNITY_EDITOR
