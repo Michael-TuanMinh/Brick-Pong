@@ -7,6 +7,7 @@ public class Ball : MonoBehaviour
     [SerializeField] float speed;
     [HideInInspector] public Vector2 direction;
     private Rigidbody2D rb;
+    public int invert = 1; 
 
     void Start()
     {
@@ -28,7 +29,7 @@ public class Ball : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = (Vector3)direction * speed;
+        rb.velocity = (Vector3)direction * speed * invert;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -61,6 +61,12 @@ public class NetworkClient : MonoBehaviour
                 SpawnPlayers(pcMsg.newPlayer.id, pcMsg.newPlayer.cubeColor);
                 Debug.Log("New Player joined");
                 break;
+
+            case Commands.INVERT_BALL:
+                
+                GameObject.FindGameObjectWithTag("Ball").GetComponent<Ball>().invert = -1;
+                break;
+
             case Commands.PLAYER_UPDATE:
                 PlayerUpdateMsg puMsg = JsonUtility.FromJson<PlayerUpdateMsg>(recMsg);
                 UpdatePlayers(puMsg.players);
@@ -105,7 +111,7 @@ public class NetworkClient : MonoBehaviour
     void Update()
     {
         m_Driver.ScheduleUpdate().Complete();
-
+        if (playerID != "0") GameObject.FindGameObjectWithTag("Ball").GetComponent<Ball>().invert = -1;
         if (!m_Connection.IsCreated)
         {
             return;

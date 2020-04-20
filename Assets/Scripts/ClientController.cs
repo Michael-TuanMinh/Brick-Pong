@@ -27,8 +27,6 @@ public class ClientController : MonoBehaviour
         {
             positionVector3 -= transform.TransformVector(Vector3.right) * Time.deltaTime;
         }
-        
-
     }
 
     void SendPos()

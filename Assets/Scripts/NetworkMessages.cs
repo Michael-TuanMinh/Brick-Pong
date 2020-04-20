@@ -11,7 +11,8 @@ namespace NetworkMessages
         PLAYER_INPUT,
         OWNED_ID,
         PLAYER_DROPPED,
-        PLAYER_LIST
+        PLAYER_LIST,
+        INVERT_BALL
     }
 
     [System.Serializable]
@@ -19,6 +20,15 @@ namespace NetworkMessages
     {
         public Commands cmd;
     }
+
+    [System.Serializable]
+    public class IsSecondPlayer : NetworkHeader
+    {
+        public IsSecondPlayer()
+        {
+            cmd = Commands.INVERT_BALL;
+        }
+    };
 
     [System.Serializable]
     public class PlayerUpdateMsg : NetworkHeader
