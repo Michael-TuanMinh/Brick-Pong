@@ -94,7 +94,7 @@ public class PlayerController : MonoBehaviour
         float worldScreenHeight = (float)(Camera.main.orthographicSize * 2.0);
         float worldScreenWidth = worldScreenHeight / Screen.height * Screen.width;
 
-        transform.position = new Vector2(worldScreenWidth / 3.5f, -2);
+        //transform.position = new Vector2(worldScreenWidth / 3.5f, -2);
     }
 
     private void InputMouseDrag()

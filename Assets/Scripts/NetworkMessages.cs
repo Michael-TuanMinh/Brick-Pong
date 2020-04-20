@@ -7,11 +7,11 @@ namespace NetworkMessages
     public enum Commands
     {
         PLAYER_CONNECT,
-        HANDSHAKE,
         PLAYER_UPDATE,
         PLAYER_INPUT,
-        SERVER_UPDATE,
-        DISCONNECT,
+        OWNED_ID,
+        PLAYER_DROPPED,
+        PLAYER_LIST
     }
 
     [System.Serializable]
@@ -35,6 +35,7 @@ namespace NetworkMessages
     public class PlayerInputMsg : NetworkHeader
     {
         public Vector3 position;
+        public Vector3 rotation;
 
         public PlayerInputMsg()
         {
@@ -54,40 +55,39 @@ namespace NetworkMessages
     }
 
     [System.Serializable]
-    public class ServerUpdateMsg : NetworkHeader
+    public class PlayerListMsg : NetworkHeader
     {
         public List<NetworkObjects.NetworkPlayer> players;
-        public ServerUpdateMsg()
+        public PlayerListMsg()
         {
-            cmd = Commands.SERVER_UPDATE;
+            cmd = Commands.PLAYER_LIST;
             players = new List<NetworkObjects.NetworkPlayer>();
         }
     }
 
     [System.Serializable]
-    public class HandshakeMsg : NetworkHeader
+    public class OwnIDMsg : NetworkHeader
     {
-        public NetworkObjects.NetworkPlayer player;
+        public NetworkObjects.NetworkPlayer ownedPlayer;
 
-        public HandshakeMsg()
+        public OwnIDMsg()
         {
-            cmd = Commands.HANDSHAKE;
-            player = new NetworkObjects.NetworkPlayer();
+            cmd = Commands.OWNED_ID;
+            ownedPlayer = new NetworkObjects.NetworkPlayer();
         }
     }
-
     [System.Serializable]
-    public class PlayerDisconnect : NetworkHeader
+    public class PlayerDropMsg : NetworkHeader
     {
         public List<NetworkObjects.NetworkPlayer> droppedPlayers;
-        public PlayerDisconnect()
+        public PlayerDropMsg()
         {
-            cmd = Commands.DISCONNECT;
+            cmd = Commands.PLAYER_DROPPED;
             droppedPlayers = new List<NetworkObjects.NetworkPlayer>();
         }
-        public PlayerDisconnect(List<NetworkObjects.NetworkPlayer> playerList)
+        public PlayerDropMsg(List<NetworkObjects.NetworkPlayer> playerList)
         {      // Constructor
-            cmd = Commands.DISCONNECT;
+            cmd = Commands.PLAYER_DROPPED;
             droppedPlayers = playerList;
         }
     }
@@ -106,7 +106,7 @@ namespace NetworkObjects
     {
         public Color cubeColor;
         public Vector3 cubePos;
-        public Quaternion cubeRot;
+        public Vector3 cubeRot;
 
         public NetworkPlayer()
         {

@@ -3,7 +3,10 @@ using UnityEngine.Assertions;
 using Unity.Collections;
 using Unity.Networking.Transport;
 using NetworkMessages;
+using NetworkObjects;
+using System;
 using System.Text;
+using Random = UnityEngine.Random;
 using System.Collections.Generic;
 
 public class NetworkServer : MonoBehaviour
@@ -11,9 +14,9 @@ public class NetworkServer : MonoBehaviour
     public NetworkDriver m_Driver;
     public ushort serverPort;
     private NativeList<NetworkConnection> m_Connections;
-    private ServerUpdateMsg serverMessage;
-    private List<float> timer = new List<float>();
- 
+    PlayerListMsg plMsg;
+    List<float> msgInterval;
+
     void Start()
     {
         m_Driver = NetworkDriver.Create();
@@ -26,52 +29,76 @@ public class NetworkServer : MonoBehaviour
 
         m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
 
-        serverMessage = new ServerUpdateMsg();
+        plMsg = new PlayerListMsg();
+        msgInterval = new List<float>();
 
-        InvokeRepeating("SendPosition", 1, 0.03f);
+        InvokeRepeating("SendPosition", 1, 0.033f);
     }
 
     void SendToClient(string message, NetworkConnection c)
     {
-        if (!c.IsCreated) return;
-
+        if (!c.IsCreated)
+        {
+            Debug.LogError("Connection not created");
+            return;
+        }
         var writer = m_Driver.BeginSend(NetworkPipeline.Null, c);
         NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
         writer.WriteBytes(bytes);
         m_Driver.EndSend(writer);
     }
-
-   
+    public void OnDestroy()
+    {
+        m_Driver.Dispose();
+        m_Connections.Dispose();
+    }
 
     void OnConnect(NetworkConnection c)
     {
-        HandshakeMsg m = new HandshakeMsg();
-        m.player.id = c.InternalId.ToString();
-        m.player.cubeColor = new Color(Random.Range(0, 1.0f), Random.Range(0, 1.0f), Random.Range(0, 1.0f));
+        Debug.Log("Accepted a connection");
 
-        /*if(m_Connections.Length % 2 == 0)
-        {
-            m.player.cubePos = new Vector3(2, -2, 0);
-        }
-        if (m_Connections.Length % 2 == 1)
-        {
-            m.player.cubePos = new Vector3(-2, 2, 0);
-            m.player.cubeRot = Quaternion.Euler(0, 0, 180);
-        }*/
+        // Send Own id
+        OwnIDMsg idMsg = new OwnIDMsg();
+        idMsg.ownedPlayer.id = c.InternalId.ToString();
+        idMsg.ownedPlayer.cubeColor = new Color(Random.Range(0, 1.0f), Random.Range(0, 1.0f), Random.Range(0, 1.0f));
+        Debug.Log("Sending player id: " + idMsg.ownedPlayer.id);
+        SendToClient(JsonUtility.ToJson(idMsg), c);
 
-        SendToClient(JsonUtility.ToJson(m), c);
+        NetworkObjects.NetworkPlayer newPlayer = new NetworkObjects.NetworkPlayer();
+        newPlayer.id = c.InternalId.ToString();
+        newPlayer.cubeColor = idMsg.ownedPlayer.cubeColor;
+        plMsg.players.Add(newPlayer);
+        msgInterval.Add(0.0f);
 
-        serverMessage.players.Add(m.player);
-        timer.Add(0.0f);
-
+        // Example to send a Connect message to the client
         for (int i = 0; i < m_Connections.Length; i++)
         {
-            SendToClient(JsonUtility.ToJson(m.player), m_Connections[i]);
+            PlayerConnectMsg m = new PlayerConnectMsg();
+            Debug.Log("Send Player Connect");
+            m.newPlayer.id = c.InternalId.ToString();
+            m.newPlayer.cubeColor = idMsg.ownedPlayer.cubeColor;
+            SendToClient(JsonUtility.ToJson(m), m_Connections[i]);
         }
 
-        SendToClient(JsonUtility.ToJson(serverMessage), c);
+        SendToClient(JsonUtility.ToJson(plMsg), c);
         m_Connections.Add(c);
-        Debug.Log("Accepted a connection");
+    }
+
+    void SendPosition()
+    {
+        PlayerUpdateMsg m = new PlayerUpdateMsg();
+        foreach (NetworkObjects.NetworkPlayer p in plMsg.players)
+        {
+            NetworkObjects.NetworkPlayer temp = new NetworkObjects.NetworkPlayer();
+            temp.id = p.id;
+            temp.cubePos = p.cubePos;
+            temp.cubeRot = p.cubeRot;
+            m.players.Add(temp);
+        }
+        foreach (NetworkConnection c in m_Connections)
+        {
+            SendToClient(JsonUtility.ToJson(m), c);
+        }
     }
 
     void OnData(DataStreamReader stream, int i)
@@ -81,73 +108,62 @@ public class NetworkServer : MonoBehaviour
         string recMsg = Encoding.ASCII.GetString(bytes.ToArray());
         NetworkHeader header = JsonUtility.FromJson<NetworkHeader>(recMsg);
 
-        int index = FindPlayerById(m_Connections[i].InternalId.ToString());
+        int index = MatchPlayerWithId(m_Connections[i].InternalId.ToString());
 
         switch (header.cmd)
         {
             case Commands.PLAYER_INPUT:
                 PlayerInputMsg input = JsonUtility.FromJson<PlayerInputMsg>(recMsg);
-                serverMessage.players[index].cubePos = input.position;
-                timer[index] = Time.deltaTime;
+                plMsg.players[index].cubePos = input.position;
+                plMsg.players[index].cubeRot = input.rotation;
+                msgInterval[index] = Time.deltaTime;
                 break;
-
             default:
                 Debug.Log("SERVER ERROR: Unrecognized message received!");
                 break;
         }
     }
 
-    public void OnDestroy()
-    {
-        m_Driver.Dispose();
-        m_Connections.Dispose();
-    }
-
     void DropClients()
     {
-        PlayerDisconnect list = new PlayerDisconnect();
-        for (int i = 0; i < serverMessage.players.Count; i++)
+        PlayerDropMsg droppedList = new PlayerDropMsg();
+        for (int i = 0; i < plMsg.players.Count; i++)
         {
-            timer[i] += Time.deltaTime;
-            if (timer[i] >= 5.0f)
+            msgInterval[i] += Time.deltaTime;
+            if (msgInterval[i] >= 5.0f)
             {
-                int index = FindConnectionById(serverMessage.players[i].id);
+                int index = MatchConnectionWithId(plMsg.players[i].id);
                 if (index >= 0)
-                {
                     m_Connections[index] = default(NetworkConnection);
-                }
-                    
 
-                list.droppedPlayers.Add(serverMessage.players[i]);
-                serverMessage.players.RemoveAt(i);
-                timer[i] = 0;
+                droppedList.droppedPlayers.Add(plMsg.players[i]);
+                plMsg.players.RemoveAt(i);
                 i--;
-
-                Debug.Log("Unrespone for more than 5 seconds");
             }
         }
 
+        // CleanUpConnections
         for (int i = 0; i < m_Connections.Length; i++)
         {
             if (!m_Connections[i].IsCreated)
             {
+
                 m_Connections.RemoveAtSwapBack(i);
                 --i;
             }
         }
 
-        if (list.droppedPlayers.Count > 0)
+        if (droppedList.droppedPlayers.Count > 0)
         {
+            Debug.Log("Player Dropped");
             for (int i = 0; i < m_Connections.Length; i++)
             {
-                SendToClient(JsonUtility.ToJson(list), m_Connections[i]);
+                SendToClient(JsonUtility.ToJson(droppedList), m_Connections[i]);
             }
-
-            Debug.Log("Player Disconnected");
         }
     }
 
-    int FindConnectionById(string id)
+    int MatchConnectionWithId(string id)
     {
         for (int i = 0; i < m_Connections.Length; i++)
         {
@@ -156,12 +172,11 @@ public class NetworkServer : MonoBehaviour
         }
         return -1;
     }
-
-    int FindPlayerById(string id)
+    int MatchPlayerWithId(string id)
     {
         for (int i = 0; i < m_Connections.Length; i++)
         {
-            if (serverMessage.players[i].id == id)
+            if (plMsg.players[i].id == id)
                 return i;
         }
         return -1;
@@ -199,22 +214,6 @@ public class NetworkServer : MonoBehaviour
                 }
                 cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream);
             }
-        }
-    }
-
-    void SendPosition()
-    {
-        PlayerUpdateMsg m = new PlayerUpdateMsg();
-        foreach (NetworkObjects.NetworkPlayer p in serverMessage.players)
-        {
-            NetworkObjects.NetworkPlayer temp = new NetworkObjects.NetworkPlayer();
-            temp.id = p.id;
-            temp.cubePos = p.cubePos;
-            m.players.Add(temp);
-        }
-        foreach (NetworkConnection c in m_Connections)
-        {
-            SendToClient(JsonUtility.ToJson(m), c);
         }
     }
 }

@@ -11,7 +11,19 @@ public class Ball : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        
         direction = Vector2.one.normalized;
+    }
+
+    private void Update()
+    {
+        if(!rb.simulated)
+        {
+            var players = GameObject.FindGameObjectsWithTag("Player");
+            if (players.Length > 1)
+            rb.simulated = true;
+        }
+       
     }
 
     private void FixedUpdate()

@@ -11,13 +11,11 @@ public class NetworkClient : MonoBehaviour
 {
     public NetworkDriver m_Driver;
     public NetworkConnection m_Connection;
+    public GameObject cube;
     public string serverIP;
     public ushort serverPort;
-
-    [SerializeField] GameObject playerObject;
-
-    private string myID;
-    private Dictionary<string, GameObject> myList = new Dictionary<string, GameObject>();
+    string playerID;
+    Dictionary<string, GameObject> ClientsList;
 
     void Start()
     {
@@ -25,6 +23,7 @@ public class NetworkClient : MonoBehaviour
         m_Connection = default(NetworkConnection);
         var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
         m_Connection = m_Driver.Connect(endpoint);
+        ClientsList = new Dictionary<string, GameObject>();
     }
 
     void SendToServer(string message)
@@ -40,6 +39,14 @@ public class NetworkClient : MonoBehaviour
         Debug.Log("We are now connected to the server");
     }
 
+    public void SendingPosition(Vector3 pos, Vector3 rot)
+    {
+        PlayerInputMsg m = new PlayerInputMsg();
+        m.position = pos;
+        m.rotation = rot;
+        SendToServer(JsonUtility.ToJson(m));
+    }
+
     void OnData(DataStreamReader stream)
     {
         NativeArray<byte> bytes = new NativeArray<byte>(stream.Length, Allocator.Temp);
@@ -49,32 +56,34 @@ public class NetworkClient : MonoBehaviour
 
         switch (header.cmd)
         {
-            case Commands.HANDSHAKE:
-                HandshakeMsg hsMsg = JsonUtility.FromJson<HandshakeMsg>(recMsg);
-                myID = hsMsg.player.id;
-                break;
-
             case Commands.PLAYER_CONNECT:
                 PlayerConnectMsg pcMsg = JsonUtility.FromJson<PlayerConnectMsg>(recMsg);
-                SpawnPlayers(pcMsg.newPlayer);
+                SpawnPlayers(pcMsg.newPlayer.id, pcMsg.newPlayer.cubeColor);
+                Debug.Log("New Player joined");
                 break;
             case Commands.PLAYER_UPDATE:
                 PlayerUpdateMsg puMsg = JsonUtility.FromJson<PlayerUpdateMsg>(recMsg);
                 UpdatePlayers(puMsg.players);
+                
                 break;
-            
-            case Commands.DISCONNECT:
-                PlayerDisconnect dropMsg = JsonUtility.FromJson<PlayerDisconnect>(recMsg);
+            case Commands.OWNED_ID:
+                OwnIDMsg idMsg = JsonUtility.FromJson<OwnIDMsg>(recMsg);
+                playerID = idMsg.ownedPlayer.id;
+                Debug.Log("Own id received! id: " + playerID);
+                break;
+            case Commands.PLAYER_DROPPED:
+                PlayerDropMsg dropMsg = JsonUtility.FromJson<PlayerDropMsg>(recMsg);
                 foreach (NetworkObjects.NetworkPlayer p in dropMsg.droppedPlayers)
                 {
-                   DestroyPlayers(p.id);
+                    DestroyPlayers(p.id);
                 }
                 break;
-            case Commands.SERVER_UPDATE:
-                ServerUpdateMsg suMsg = JsonUtility.FromJson<ServerUpdateMsg>(recMsg);
-                foreach (var it in suMsg.players)
+            case Commands.PLAYER_LIST:
+                PlayerListMsg plMsg = JsonUtility.FromJson<PlayerListMsg>(recMsg);
+                foreach (var it in plMsg.players)
                 {
-                    SpawnPlayers(it);
+                    SpawnPlayers(it.id, it.cubeColor);
+                    Debug.Log("Spawn player with id: " + it.id);
                 }
                 break;
             default:
@@ -93,7 +102,6 @@ public class NetworkClient : MonoBehaviour
     {
         m_Driver.Dispose();
     }
-
     void Update()
     {
         m_Driver.ScheduleUpdate().Complete();
@@ -125,45 +133,41 @@ public class NetworkClient : MonoBehaviour
         }
     }
 
-    void SpawnPlayers(NetworkObjects.NetworkPlayer p)
+    void SpawnPlayers(string id, Color color)
     {
-        if (myList.ContainsKey(p.id)) return;
-
-        GameObject temp = Instantiate(playerObject, Vector3.zero, Quaternion.identity);
-        //temp.GetComponent<MeshRenderer>().material.color = p.cubeColor;
-
-        if (p.id == myID) temp.AddComponent<ClientController>().client = this;
-      
-        myList.Add(p.id, temp);
+        if (ClientsList.ContainsKey(id))
+            return;
+        //Debug.Log("Spawned player id: " + id);
+        GameObject temp = Instantiate(cube, new Vector3(0, 3, 0), cube.transform.rotation);
+        
+        if (id == playerID)
+        {
+            temp.transform.position = new Vector3(0, -2, 0);
+            temp.AddComponent<ClientController>().client = this;
+        }
+        ClientsList.Add(id, temp);
     }
 
     void DestroyPlayers(string id)
     {
-        if (myList.ContainsKey(id))
+        if (ClientsList.ContainsKey(id))
         {
-            GameObject temp = myList[id];
-            myList.Remove(id);
+            GameObject temp = ClientsList[id];
+            ClientsList.Remove(id);
             Destroy(temp);
         }
     }
 
     void UpdatePlayers(List<NetworkObjects.NetworkPlayer> players)
     {
-        for (int i = 0; i < players.Count; i++)
+        foreach (NetworkObjects.NetworkPlayer p in players)
         {
-            if (myList.ContainsKey(players[i].id))
+            if (ClientsList.ContainsKey(p.id))
             {
-                myList[players[i].id].transform.position = players[i].cubePos;
-               // myList[players[i].id].transform.rotation = players[i].cubeRot;
+                ClientsList[p.id].transform.position = new Vector3(p.cubePos.x, ClientsList[p.id].transform.position.y, ClientsList[p.id].transform.position.z);
+                ClientsList[p.id].transform.eulerAngles = p.cubeRot;
             }
         }
 
-    }
-
-    public void SendPosition(Vector3 pos)
-    {
-        PlayerInputMsg m = new PlayerInputMsg();
-        m.position = pos;
-        SendToServer(JsonUtility.ToJson(m));
     }
 }

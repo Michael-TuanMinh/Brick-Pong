@@ -5,36 +5,34 @@ using UnityEngine;
 public class ClientController : MonoBehaviour
 {
     public NetworkClient client;
-    private Vector3 position;
+    Vector3 positionVector3;
+    Vector3 rotationVector3;
 
-    private void Start()
+
+    // Start is called before the first frame update
+    void Start()
     {
-        InvokeRepeating("Tick", 1, 0.03f);
+        InvokeRepeating("SendPos", 1, 0.033f);
+
     }
 
-    private void Update()
+    // Update is called once per frame
+    void Update()
     {
-        if (Input.GetKey(KeyCode.W))
-        {
-            position += transform.TransformVector(Vector3.forward) * Time.deltaTime;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            position -= transform.TransformVector(Vector3.forward) * Time.deltaTime;
-        }
         if (Input.GetKey(KeyCode.D))
         {
-            position += transform.TransformVector(Vector3.right) * Time.deltaTime;
+            positionVector3 += transform.TransformVector(Vector3.right) * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            position -= transform.TransformVector(Vector3.right) * Time.deltaTime;
+            positionVector3 -= transform.TransformVector(Vector3.right) * Time.deltaTime;
         }
+        
 
     }
 
-    private void Tick()
+    void SendPos()
     {
-        client.SendPosition(position);
+        client.SendingPosition(positionVector3, rotationVector3);
     }
 }
