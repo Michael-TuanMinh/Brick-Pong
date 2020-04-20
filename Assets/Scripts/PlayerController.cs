@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool isAtLeftBorder = false;
     [HideInInspector] public bool isAtRightBorder = false;
 
+
     private int[,] grid = {
         { 0,0,1,1,1,3,3,1,1,1,0,0},
         { 0,1,1,1,1,3,3,1,1,1,1,0},
@@ -31,10 +32,13 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+
         InitializeCharacter();
         rb = GetComponent<Rigidbody2D>();
     }
-    
+
+   
+
 
     private void Update()
     {
@@ -114,6 +118,7 @@ public class PlayerController : MonoBehaviour
             if (isAtLeftBorder && touchPos.x - deltaX > transform.position.x) // move to the left
             {
                 rb.MovePosition(new Vector2(touchPos.x - deltaX, touchPos.y - deltaY));
+                
             }
             else if (isAtRightBorder && touchPos.x - deltaX < transform.position.x) // move to the right
             {
