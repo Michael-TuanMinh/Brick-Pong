@@ -138,6 +138,7 @@ public class NetworkServer : MonoBehaviour
 
                 droppedList.droppedPlayers.Add(plMsg.players[i]);
                 plMsg.players.RemoveAt(i);
+                msgInterval[i] = 0;
                 i--;
             }
         }
